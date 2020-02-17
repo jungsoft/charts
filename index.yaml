@@ -1,0 +1,33 @@
+apiVersion: v1
+entries:
+  thanos:
+  - apiVersion: v1
+    appVersion: 0.6.0
+    created: "2020-02-17T15:31:12.310548-03:00"
+    description: A Helm chart for thanos
+    digest: 457fa140c02cd267322693a320a4ee7dddd6b354c9e4190a8a4c6223d5a68cdb
+    name: thanos
+    sources:
+    - https://github.com/jungsoft/charts/thanos
+    urls:
+    - https://github.com/jungsoft/charts/releases/download/thanos-2.0.0/thanos-2.0.0.tgz
+    version: 2.0.0
+  traefik:
+  - apiVersion: v1
+    appVersion: 2.0.5
+    created: "2020-02-17T15:31:12.52668-03:00"
+    description: A Traefik based Kubernetes ingress controller
+    digest: af0bd4e6b9b17e1401a1212da6bc4006aaf01b88f68880a6087481627557ab9f
+    engine: gotpl
+    home: https://traefik.io/
+    icon: http://traefik.io/traefik.logo.png
+    keywords:
+    - traefik
+    - ingress
+    name: traefik
+    sources:
+    - https://github.com/jungsoft/charts/traefik
+    urls:
+    - https://github.com/jungsoft/charts/releases/download/traefik-2.0.1/traefik-2.0.1.tgz
+    version: 2.0.1
+generated: "2020-02-17T15:31:12.043791-03:00"
