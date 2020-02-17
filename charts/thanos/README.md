@@ -1,1 +1,0 @@
-# thanos helm chart
