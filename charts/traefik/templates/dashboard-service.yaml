@@ -1,0 +1,20 @@
+{{- if and .Values.api.dashboard.enabled .Values.api.insecure }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "traefik.fullname" . }}-dashboard
+  labels:
+    app: {{ template "traefik.name" . }}
+    chart: {{ template "traefik.chart" . }}
+    release: {{ .Release.Name | quote }}
+    heritage: {{ .Release.Service | quote }}
+spec:
+  type: ClusterIP
+  selector:
+    app: {{ template "traefik.name" . }}
+    release: {{ .Release.Name }}
+  ports:
+  - port: 80
+    name: traefik
+    targetPort: traefik
+{{- end }}

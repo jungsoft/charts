@@ -1,0 +1,34 @@
+{{- if and .Values.api.dashboard.enabled .Values.api.insecure }}
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ template "traefik.fullname" . }}-dashboard
+  annotations:
+    helm.sh/hook: "post-install"
+  labels:
+    app: {{ template "traefik.name" . }}
+    chart: {{ template "traefik.chart" . }}
+    release: {{ .Release.Name | quote }}
+    heritage: {{ .Release.Service | quote }}
+spec:
+  entryPoints:
+  {{- range $entryPoint := .Values.api.dashboard.entryPoints }}
+    - {{ $entryPoint }}
+  {{- end }}
+  {{- if .Values.api.dashboard.certResolver }}
+  tls:
+    certResolver: {{ .Values.api.dashboard.certResolver }}
+  {{- end }}
+  routes:
+  - match: Host(`{{ .Values.api.dashboard.host }}`)
+    kind: Rule
+    services:
+    - name: {{ template "traefik.fullname" . }}-dashboard
+      port: 80
+  {{- if .Values.api.dashboard.middlewares }}
+  middlewares:
+  {{- range $middleware := .Values.api.dashboard.middlewares }}
+    - {{ $middleware }}
+  {{- end }}
+  {{- end }}
+{{- end }}
