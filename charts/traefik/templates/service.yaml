@@ -24,9 +24,12 @@ spec:
     app: {{ template "traefik.name" . }}
     release: {{ .Release.Name }}
   ports:
-  - port: 80
+  - port: {{ .Values.ports.web.port }}
     name: web
     targetPort: web
-  - port: 443
+  - port: {{ .Values.ports.websecure.port }}
     name: websecure
     targetPort: websecure
+  - port: {{ .Values.ports.traefik.port }}
+    name: traefik
+    targetPort: traefik
