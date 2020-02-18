@@ -14,10 +14,10 @@ entries:
     version: 2.0.0
   traefik:
   - apiVersion: v1
-    appVersion: 2.0.5
-    created: "2020-02-17T15:31:12.52668-03:00"
+    appVersion: 2.1.4
+    created: "2020-02-18T16:23:24.730871-03:00"
     description: A Traefik based Kubernetes ingress controller
-    digest: af0bd4e6b9b17e1401a1212da6bc4006aaf01b88f68880a6087481627557ab9f
+    digest: bac54031961d6dd23e3b15cf2c7412ef50c7b89bb728649fc90e2a12044fc28a
     engine: gotpl
     home: https://traefik.io/
     icon: http://traefik.io/traefik.logo.png
@@ -28,6 +28,6 @@ entries:
     sources:
     - https://github.com/jungsoft/charts/traefik
     urls:
-    - https://github.com/jungsoft/charts/releases/download/traefik-2.0.1/traefik-2.0.1.tgz
-    version: 2.0.1
-generated: "2020-02-17T15:31:12.043791-03:00"
+    - https://github.com/jungsoft/charts/releases/download/traefik-2.1.0/traefik-2.1.0.tgz
+    version: 2.1.0
+generated: "2020-02-18T16:23:24.730871-03:00"
