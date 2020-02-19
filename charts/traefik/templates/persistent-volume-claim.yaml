@@ -1,0 +1,76 @@
+---
+{{- if (not .Values.accessLog.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ template "traefik.fullname" . }}-access-log
+  labels:
+    app: {{ template "traefik.name" . }}
+    chart: {{ template "traefik.chart" . }}
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  accessModes:
+    - {{ .Values.accessLog.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.accessLog.size | quote }}
+  storageClassName: "{{ .Values.accessLog.storageClass }}"
+{{- end }}
+---
+{{- if and .Values.fail2ban.enabled .Values.fail2ban.logging.enabled  (not .Values.fail2ban.logging.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ template "traefik.fullname" . }}-fail2ban-log
+  labels:
+    app: {{ template "traefik.name" . }}
+    chart: {{ template "traefik.chart" . }}
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  resources:
+    requests:
+      storage: {{ .Values.fail2ban.logging.size | quote }}
+  storageClassName: "{{ .Values.fail2ban.logging.storageClass }}"
+{{- end }}
+---
+{{- if and .Values.fail2ban.enabled (not .Values.fail2ban.data.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ template "traefik.fullname" . }}-fail2ban-data
+  labels:
+    app: {{ template "traefik.name" . }}
+    chart: {{ template "traefik.chart" . }}
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  resources:
+    requests:
+      storage: {{ .Values.fail2ban.data.size | quote }}
+  storageClassName: "{{ .Values.fail2ban.data.storageClass }}"
+{{- end }}
+---
+{{- if and .Values.acme.enabled .Values.acme.persistence.enabled (not .Values.acme.persistence.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+{{- if .Values.acme.persistence.annotations }}
+  annotations:
+{{ toYaml .Values.acme.persistence.annotations | indent 4 }}
+{{- end }}
+  name: {{ template "traefik.fullname" . }}-acme
+  labels:
+    app: {{ template "traefik.name" . }}
+    chart: {{ template "traefik.chart" . }}
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  accessModes:
+    - {{ .Values.acme.persistence.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.acme.persistence.size | quote }}
+  storageClassName: "{{ .Values.acme.persistence.storageClass }}"
+{{- end }}

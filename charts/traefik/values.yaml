@@ -8,11 +8,14 @@ deployment:
 #
 ports:
   web:
-    port: 80
+    port: 8000
+    exposedPort: 80
   websecure:
-    port: 443
+    port: 8443
+    exposedPort: 443
   traefik:
-    port: 8080
+    port: 9000
+    exposedPort: 9000
 #
 service:
   annotations:
@@ -49,20 +52,9 @@ acme:
   persistence:
     enabled: true
     annotations: {}
-    ## acme data Persistent Volume Storage Class
-    ## If defined, storageClassName: <storageClass>
-    ## If set to "-", storageClassName: "", which disables dynamic provisioning
-    ## If undefined (the default) or set to null, no storageClassName spec is
-    ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
-    ##   GKE, AWS & OpenStack)
-    ##
-    # storageClass: "-"
+    storageClass: ""
     accessMode: ReadWriteOnce
     size: 1Gi
-    ## A manually managed Persistent Volume Claim
-    ## Requires persistence.enabled: true
-    ## If defined, PVC must be created manually before volume will be bound
-    ##
     # existingClaim:
   dnsProvider:
     name: nil
@@ -146,7 +138,21 @@ acme:
       VULTR_API_KEY: ""
 #
 accessLog:
+  accessMode: ReadWriteOnce
+  size: 2Gi
+  storageClass: ""
+  # existingClaim: log-claim
+#
+fail2ban:
   enabled: true
-  volume:
-    mountPath: /mountlogs
-    hostPath: /logs
+  image: crazymax/fail2ban:0.11.1
+  resources: {}
+  logging:
+    enabled: true
+    size: 2Gi
+    storageClass: ""
+    # existingClaim: fail2ban-log-pvc
+  data:
+    size: 8Gi
+    storageClass: ""
+  #   existingClaim: fail2ban-data-pvc

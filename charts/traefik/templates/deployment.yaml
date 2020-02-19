@@ -39,6 +39,7 @@ spec:
 {{ toYaml .Values.yaml.tolerations | indent 8 }}
       {{- end }}
       {{- end }}
+      hostNetwork: true
       containers:
       - image: {{ .Values.image.name }}:{{ .Values.image.tag }}
         name: {{ template "traefik.fullname" . }}
@@ -79,10 +80,8 @@ spec:
         volumeMounts:
         - name: config
           mountPath: /config
-        {{- if .Values.accessLog.enabled }}
         - name: access-log-vol
-          mountPath: {{ .Values.accessLog.volume.mountPath }}
-        {{- end }}
+          mountPath: /logs
         {{- if .Values.acme.enabled }}
         - name: acme-vol
           mountPath: /acme
@@ -105,16 +104,56 @@ spec:
         {{- end }}
         args:
           - --configfile=/config/traefik-static.yaml
+
+      {{- if .Values.fail2ban.enabled }}
+      - image: {{ .Values.fail2ban.image }}
+        name: fail2ban
+        securityContext:
+          capabilities:
+            add:
+              - NET_ADMIN
+              - NET_RAW
+        resources:
+        {{- with .Values.fail2ban.resources }}
+{{ toYaml . | indent 10 }}
+        {{- end }}
+        readinessProbe:
+          exec:
+            command:
+            - fail2ban-client ping || exit 1
+          initialDelaySeconds: 5
+          failureThreshold: 1
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        livenessProbe:
+          exec:
+            command:
+            - fail2ban-client ping || exit 1
+          failureThreshold: 3
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        volumeMounts:
+        - name: access-log-vol
+          mountPath: /logs
+          readOnly: true
+        - name: fail2ban-data-vol
+          mountPath: /data
+        {{- if .Values.fail2ban.logging.enabled }}
+        - name: fail2ban-log-vol
+          mountPath: /var/log
+        {{- end }}
+      {{- end }}
+
       volumes:
       - name: config
         configMap:
           name: {{ template "traefik.fullname" . }}
-      {{- if .Values.accessLog.enabled }}
       - name: access-log-vol
-        hostPath:
-          path: {{ .Values.accessLog.volume.hostPath }}
-          type: DirectoryOrCreate
-      {{- end }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.accessLog.existingClaim | default (printf "%s-access-log" (include "traefik.fullname" .)) }}
       {{- if .Values.acme.enabled }}
       - name: acme-vol
       {{- if .Values.acme.persistence.enabled }}
@@ -123,4 +162,14 @@ spec:
       {{- else }}
         emptyDir: {}
       {{- end }}
+      {{- end }}
+      {{- if and .Values.fail2ban.enabled .Values.fail2ban.logging.enabled }}
+      - name: fail2ban-log-vol
+        persistentVolumeClaim:
+          claimName: {{ .Values.fail2ban.logging.existingClaim | default (printf "%s-fail2ban-log" (include "traefik.fullname" .)) }}
+      {{- end }}
+      {{- if .Values.fail2ban.enabled }}
+      - name: fail2ban-data-vol
+        persistentVolumeClaim:
+          claimName: {{ .Values.fail2ban.data.existingClaim | default (printf "%s-fail2ban-data" (include "traefik.fullname" .)) }}
       {{- end }}
