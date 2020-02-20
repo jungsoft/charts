@@ -146,6 +146,9 @@ fail2ban:
   enabled: true
   image: crazymax/fail2ban:0.11.1
   resources: {}
+  traefikLogFilename: traefik.log
+  maxRetry: 20
+  findTime: 300
   logging:
     enabled: true
     size: 2Gi

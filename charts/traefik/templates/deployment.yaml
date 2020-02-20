@@ -100,6 +100,9 @@ spec:
       {{- if .Values.fail2ban.enabled }}
       - image: {{ .Values.fail2ban.image }}
         name: fail2ban
+        env:
+          - name: "F2B_IPTABLES_CHAIN"
+            value: "INPUT"
         securityContext:
           capabilities:
             add:
@@ -135,6 +138,12 @@ spec:
         - name: access-log-vol
           mountPath: /logs
           readOnly: true
+        - name: fail2ban-filter-vol
+          mountPath: /data/filter.d/traefik.conf
+          subPath: traefik.conf
+        - name: fail2ban-jail-vol
+          mountPath: /data/jail.d/traefik.conf
+          subPath: traefik.conf
         - name: fail2ban-data-vol
           mountPath: /data
         {{- if .Values.fail2ban.logging.enabled }}
@@ -169,3 +178,9 @@ spec:
         persistentVolumeClaim:
           claimName: {{ .Values.fail2ban.data.existingClaim | default (printf "%s-fail2ban-data" (include "traefik.fullname" .)) }}
       {{- end }}
+      - name: fail2ban-filter-vol
+        configMap:
+          name: fail2ban-filter
+      - name: fail2ban-jail-vol
+        configMap:
+          name: fail2ban-jail
