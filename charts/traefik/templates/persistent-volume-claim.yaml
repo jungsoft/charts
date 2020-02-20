@@ -29,6 +29,8 @@ metadata:
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
 spec:
+  accessModes:
+    - {{ .Values.fail2ban.logging.accessMode | quote }}
   resources:
     requests:
       storage: {{ .Values.fail2ban.logging.size | quote }}
@@ -46,6 +48,8 @@ metadata:
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
 spec:
+  accessModes:
+    - {{ .Values.fail2ban.data.accessMode | quote }}
   resources:
     requests:
       storage: {{ .Values.fail2ban.data.size | quote }}

@@ -150,9 +150,11 @@ fail2ban:
   logging:
     enabled: true
     size: 2Gi
+    accessMode: ReadWriteOnce
     storageClass: ""
     # existingClaim: fail2ban-log-pvc
   data:
     size: 8Gi
+    accessMode: ReadWriteOnce
     storageClass: ""
   #   existingClaim: fail2ban-data-pvc
