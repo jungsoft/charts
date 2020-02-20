@@ -8,26 +8,26 @@ entries:
     digest: 457fa140c02cd267322693a320a4ee7dddd6b354c9e4190a8a4c6223d5a68cdb
     name: thanos
     sources:
-    - https://github.com/jungsoft/charts/thanos
+    - https://github.com/jungsoft/charts
     urls:
     - https://github.com/jungsoft/charts/releases/download/thanos-2.0.0/thanos-2.0.0.tgz
     version: 2.0.0
   traefik:
   - apiVersion: v1
     appVersion: 2.1.4
-    created: "2020-02-18T16:23:24.730871-03:00"
+    created: "2020-02-20T12:47:26.590484-03:00"
     description: A Traefik based Kubernetes ingress controller
-    digest: bac54031961d6dd23e3b15cf2c7412ef50c7b89bb728649fc90e2a12044fc28a
+    digest: 5176e7dbf52ffa648f4f753596578fe58211f5b8b9378febb4ed3a8fded8b392
     engine: gotpl
     home: https://traefik.io/
-    icon: http://traefik.io/traefik.logo.png
+    icon: https://miro.medium.com/max/259/1*sOmYC8Zmk8SSlLWdscbNQQ.png
     keywords:
     - traefik
     - ingress
     name: traefik
     sources:
-    - https://github.com/jungsoft/charts/traefik
+    - https://github.com/jungsoft/charts
     urls:
-    - https://github.com/jungsoft/charts/releases/download/traefik-2.1.0/traefik-2.1.0.tgz
-    version: 2.1.0
+    - https://github.com/jungsoft/charts/releases/download/traefik-2.2.0/traefik-2.2.0.tgz
+    version: 2.2.0
 generated: "2020-02-18T16:23:24.730871-03:00"
