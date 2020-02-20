@@ -8,24 +8,26 @@ deployment:
 #
 ports:
   web:
-    port: 80
+    port: 8000
+    exposedPort: 80
   websecure:
-    port: 443
+    port: 8443
+    exposedPort: 443
   traefik:
     port: 8080
+    exposedPort: 8080
 #
 service:
   annotations:
 #  externalTrafficPolicy: Cluster
 #
-yaml:
-  resources:
-    requests:
-      cpu: "100m"
-      memory: "50Mi"
-    limits:
-      cpu: "300m"
-      memory: "150Mi"
+# resources:
+#   requests:
+#     cpu: "100m"
+#     memory: "50Mi"
+#   limits:
+#     cpu: "300m"
+#     memory: "150Mi"
 #  nodeSelector: {}
 #  tolerations: []
 #
@@ -49,20 +51,9 @@ acme:
   persistence:
     enabled: true
     annotations: {}
-    ## acme data Persistent Volume Storage Class
-    ## If defined, storageClassName: <storageClass>
-    ## If set to "-", storageClassName: "", which disables dynamic provisioning
-    ## If undefined (the default) or set to null, no storageClassName spec is
-    ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
-    ##   GKE, AWS & OpenStack)
-    ##
-    # storageClass: "-"
+    storageClass: ""
     accessMode: ReadWriteOnce
     size: 1Gi
-    ## A manually managed Persistent Volume Claim
-    ## Requires persistence.enabled: true
-    ## If defined, PVC must be created manually before volume will be bound
-    ##
     # existingClaim:
   dnsProvider:
     name: nil
@@ -145,8 +136,21 @@ acme:
     vultr:
       VULTR_API_KEY: ""
 #
-accessLog:
+logs:
+  accessMode: ReadWriteOnce
+  size: 2Gi
+  storageClass: ""
+  # existingClaim: log-claim
+#
+fail2ban:
   enabled: true
-  volume:
-    mountPath: /mountlogs
-    hostPath: /logs
+  image: crazymax/fail2ban:0.11.1
+  resources: {}
+  traefikLogFilename: traefik.log
+  maxRetry: 20
+  findTime: 300
+  data:
+    size: 8Gi
+    accessMode: ReadWriteOnce
+    storageClass: ""
+  #   existingClaim: fail2ban-data-pvc

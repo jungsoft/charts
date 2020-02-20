@@ -1,3 +1,4 @@
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -10,3 +11,40 @@ metadata:
 data:
   traefik-static.yaml: {{ .Values.staticConfig | quote }}
   traefik-dynamic.yaml: {{ .Values.dynamicConfig | quote }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fail2ban-filter
+  labels:
+    app: {{ template "traefik.name" . }}
+    chart: {{ template "traefik.chart" . }}
+    release: {{ .Release.Name | quote }}
+    heritage: {{ .Release.Service | quote }}
+data:
+  traefik.conf: |
+    [Definition]
+    _groupsre = (?:(?:\s*"\w+":(?:"[^"]+"|\w+),)*)\s*
+    failregex = ^\{%(_groupsre)s"ClientHost":"<HOST>",%(_groupsre)s"DownstreamStatus"
+
+    datepattern = "StartLocal"\s*:\s*"%%Y-%%m-%%d[T ]%%H:%%M:%%S\.%%f\d*(%%z)?",
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fail2ban-jail
+  labels:
+    app: {{ template "traefik.name" . }}
+    chart: {{ template "traefik.chart" . }}
+    release: {{ .Release.Name | quote }}
+    heritage: {{ .Release.Service | quote }}
+data:
+  traefik.conf: |
+    [traefik]
+    enabled = true
+    port = http,https
+    filter = traefik
+    logpath = /logs/{{ .Values.fail2ban.traefikLogFilename }}
+    maxretry = {{ .Values.fail2ban.maxRetry }}
+    findtime = {{ .Values.fail2ban.findTime }}
+    banaction = iptables-allports
