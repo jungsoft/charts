@@ -1,9 +1,9 @@
 ---
-{{- if (not .Values.accessLog.existingClaim) }}
+{{- if (not .Values.logs.existingClaim) }}
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: {{ template "traefik.fullname" . }}-access-log
+  name: {{ template "traefik.fullname" . }}-logs
   labels:
     app: {{ template "traefik.name" . }}
     chart: {{ template "traefik.chart" . }}
@@ -11,30 +11,11 @@ metadata:
     heritage: "{{ .Release.Service }}"
 spec:
   accessModes:
-    - {{ .Values.accessLog.accessMode | quote }}
+    - {{ .Values.logs.accessMode | quote }}
   resources:
     requests:
-      storage: {{ .Values.accessLog.size | quote }}
-  storageClassName: "{{ .Values.accessLog.storageClass }}"
-{{- end }}
----
-{{- if and .Values.fail2ban.enabled .Values.fail2ban.logging.enabled  (not .Values.fail2ban.logging.existingClaim) }}
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: {{ template "traefik.fullname" . }}-fail2ban-log
-  labels:
-    app: {{ template "traefik.name" . }}
-    chart: {{ template "traefik.chart" . }}
-    release: "{{ .Release.Name }}"
-    heritage: "{{ .Release.Service }}"
-spec:
-  accessModes:
-    - {{ .Values.fail2ban.logging.accessMode | quote }}
-  resources:
-    requests:
-      storage: {{ .Values.fail2ban.logging.size | quote }}
-  storageClassName: "{{ .Values.fail2ban.logging.storageClass }}"
+      storage: {{ .Values.logs.size | quote }}
+  storageClassName: "{{ .Values.logs.storageClass }}"
 {{- end }}
 ---
 {{- if and .Values.fail2ban.enabled (not .Values.fail2ban.data.existingClaim) }}
