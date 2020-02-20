@@ -29,30 +29,26 @@ spec:
     spec:
       serviceAccountName: {{ template "traefik.fullname" . }}
       terminationGracePeriodSeconds: 60
-      {{- if .Values.yaml }}
-      {{- if .Values.yaml.nodeSelector }}
+      {{- with .Values.nodeSelector }}
       nodeSelector:
-{{ toYaml .Values.yaml.nodeSelector | indent 8 }}
+      {{ toYaml . | nindent 8 }}
       {{- end }}
-      {{- if .Values.yaml.tolerations }}
+      {{- with .Values.tolerations }}
       tolerations:
-{{ toYaml .Values.yaml.tolerations | indent 8 }}
-      {{- end }}
+      {{ toYaml . | nindent 8 }}
       {{- end }}
       hostNetwork: true
       containers:
       - image: {{ .Values.image.name }}:{{ .Values.image.tag }}
         name: {{ template "traefik.fullname" . }}
         resources:
-        {{- if .Values.yaml }}
-        {{- if .Values.yaml.resources }}
-{{ toYaml .Values.yaml.resources | indent 10 }}
-        {{- end }}
+        {{- with .Values.resources }}
+        {{- toYaml . | nindent 10 }}
         {{- end }}
         readinessProbe:
           httpGet:
             path: /ping
-            port: {{ .Values.ports.traefik.port }}
+            port: traefik
           failureThreshold: 1
           initialDelaySeconds: 10
           periodSeconds: 10
@@ -61,22 +57,18 @@ spec:
         livenessProbe:
           httpGet:
             path: /ping
-            port: {{ .Values.ports.traefik.port }}
+            port: traefik
           failureThreshold: 3
           initialDelaySeconds: 10
           periodSeconds: 10
           successThreshold: 1
           timeoutSeconds: 2
         ports:
-        - name: web
-          containerPort: {{ .Values.ports.web.port }}
+        {{- range $name, $config := .Values.ports }}
+        - name: {{ $name | quote }}
+          containerPort: {{ $config.port }}
           protocol: TCP
-        - name: websecure
-          containerPort: {{ .Values.ports.websecure.port }}
-          protocol: TCP
-        - name: traefik
-          containerPort: {{ .Values.ports.traefik.port }}
-          protocol: TCP
+        {{- end }}
         volumeMounts:
         - name: config
           mountPath: /config
@@ -115,12 +107,14 @@ spec:
               - NET_RAW
         resources:
         {{- with .Values.fail2ban.resources }}
-{{ toYaml . | indent 10 }}
+          {{ toYaml . | nindent 10 }}
         {{- end }}
         readinessProbe:
           exec:
             command:
-            - fail2ban-client ping || exit 1
+              - sh
+              - -c
+              - /usr/bin/fail2ban-client ping || exit 1
           initialDelaySeconds: 5
           failureThreshold: 1
           periodSeconds: 10
@@ -129,7 +123,9 @@ spec:
         livenessProbe:
           exec:
             command:
-            - fail2ban-client ping || exit 1
+              - sh
+              - -c
+              - /usr/bin/fail2ban-client ping || exit 1
           failureThreshold: 3
           initialDelaySeconds: 10
           periodSeconds: 10

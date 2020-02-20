@@ -14,21 +14,20 @@ ports:
     port: 8443
     exposedPort: 443
   traefik:
-    port: 9000
-    exposedPort: 9000
+    port: 8080
+    exposedPort: 8080
 #
 service:
   annotations:
 #  externalTrafficPolicy: Cluster
 #
-yaml:
-  resources:
-    requests:
-      cpu: "100m"
-      memory: "50Mi"
-    limits:
-      cpu: "300m"
-      memory: "150Mi"
+# resources:
+#   requests:
+#     cpu: "100m"
+#     memory: "50Mi"
+#   limits:
+#     cpu: "300m"
+#     memory: "150Mi"
 #  nodeSelector: {}
 #  tolerations: []
 #
