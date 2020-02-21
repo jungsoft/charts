@@ -8,10 +8,10 @@ deployment:
 #
 ports:
   web:
-    port: 8000
+    port: 80
     exposedPort: 80
   websecure:
-    port: 8443
+    port: 443
     exposedPort: 443
   traefik:
     port: 8080
