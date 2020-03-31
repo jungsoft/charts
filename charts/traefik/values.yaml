@@ -3,6 +3,8 @@ image:
   name: traefik
   tag: 2.1.8
 #
+createCRDs: true
+#
 deployment:
   replicas: 1
 #
