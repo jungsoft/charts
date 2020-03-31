@@ -72,12 +72,8 @@ spec:
         volumeMounts:
         - name: config
           mountPath: /config
-        - name: logs-vol
-          mountPath: /logs
-        {{- if .Values.acme.enabled }}
-        - name: acme-vol
-          mountPath: /acme
-        {{- end }}
+        - name: traefik-vol
+          mountPath: /traefik
         {{- if or (and .Values.acme.enabled (eq .Values.acme.challengeType "dns") .Values.acme.dnsProvider.name) .Values.env }}
         env:
         {{- range $k, $v := (index .Values.acme.dnsProvider .Values.acme.dnsProvider.name) }}
@@ -104,7 +100,7 @@ spec:
           - name: "F2B_IPTABLES_CHAIN"
             value: "INPUT"
           - name: "F2B_LOG_TARGET"
-            value: "/logs/fail2ban.log"
+            value: "/traefik/fail2ban.log"
         securityContext:
           capabilities:
             add:
@@ -137,39 +133,23 @@ spec:
           successThreshold: 1
           timeoutSeconds: 5
         volumeMounts:
-        - name: logs-vol
-          mountPath: /logs
+        - name: traefik-vol
+          mountPath: /traefik
         - name: fail2ban-filter-vol
-          mountPath: /data/filter.d/traefik.conf
+          mountPath: /traefik/filter.d/traefik.conf
           subPath: traefik.conf
         - name: fail2ban-jail-vol
-          mountPath: /data/jail.d/traefik.conf
+          mountPath: /traefik/jail.d/traefik.conf
           subPath: traefik.conf
-        - name: fail2ban-data-vol
-          mountPath: /data
       {{- end }}
 
       volumes:
       - name: config
         configMap:
           name: {{ template "traefik.fullname" . }}
-      - name: logs-vol
+      - name: traefik-vol
         persistentVolumeClaim:
-          claimName: {{ .Values.logs.existingClaim | default (printf "%s-logs" (include "traefik.fullname" .)) }}
-      {{- if .Values.acme.enabled }}
-      - name: acme-vol
-      {{- if .Values.acme.persistence.enabled }}
-        persistentVolumeClaim:
-          claimName: {{ .Values.acme.persistence.existingClaim | default (printf "%s-acme" (include "traefik.fullname" .)) }}
-      {{- else }}
-        emptyDir: {}
-      {{- end }}
-      {{- end }}
-      {{- if .Values.fail2ban.enabled }}
-      - name: fail2ban-data-vol
-        persistentVolumeClaim:
-          claimName: {{ .Values.fail2ban.data.existingClaim | default (printf "%s-fail2ban-data" (include "traefik.fullname" .)) }}
-      {{- end }}
+          claimName: {{ .Values.persistence.existingClaim | default (printf "%s-data" (include "traefik.fullname" .)) }}
       - name: fail2ban-filter-vol
         configMap:
           name: fail2ban-filter

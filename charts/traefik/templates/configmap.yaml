@@ -44,7 +44,7 @@ data:
     enabled = true
     port = http,https
     filter = traefik
-    logpath = /logs/{{ .Values.fail2ban.traefikLogFilename }}
+    logpath = /traefik/{{ .Values.fail2ban.traefikLogFilename }}
     maxretry = {{ .Values.fail2ban.maxRetry }}
     findtime = {{ .Values.fail2ban.findTime }}
     banaction = iptables-allports

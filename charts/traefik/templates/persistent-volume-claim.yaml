@@ -1,61 +1,25 @@
 ---
-{{- if (not .Values.logs.existingClaim) }}
+{{- if (not .Values.persistence.existingClaim) }}
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: {{ template "traefik.fullname" . }}-logs
+  name: {{ template "traefik.fullname" . }}-data
   labels:
     app: {{ template "traefik.name" . }}
     chart: {{ template "traefik.chart" . }}
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
 spec:
+{{- if hasKey .Values.persistence "storageClass" }}
+  storageClassName: {{ .Values.persistence.storageClass | quote }}
+{{- end }}
   accessModes:
-    - {{ .Values.logs.accessMode | quote }}
+    - {{ .Values.persistence.accessMode | quote }}
   resources:
     requests:
-      storage: {{ .Values.logs.size | quote }}
-  storageClassName: "{{ .Values.logs.storageClass }}"
+      storage: {{ .Values.persistence.size | quote }}
+{{- if .Values.persistence.volumeName }}
+  volumeName: {{ .Values.persistence.volumeName }}
+  volumeMode: {{ .Values.persistence.volumeMode }}
 {{- end }}
----
-{{- if and .Values.fail2ban.enabled (not .Values.fail2ban.data.existingClaim) }}
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: {{ template "traefik.fullname" . }}-fail2ban-data
-  labels:
-    app: {{ template "traefik.name" . }}
-    chart: {{ template "traefik.chart" . }}
-    release: "{{ .Release.Name }}"
-    heritage: "{{ .Release.Service }}"
-spec:
-  accessModes:
-    - {{ .Values.fail2ban.data.accessMode | quote }}
-  resources:
-    requests:
-      storage: {{ .Values.fail2ban.data.size | quote }}
-  storageClassName: "{{ .Values.fail2ban.data.storageClass }}"
-{{- end }}
----
-{{- if and .Values.acme.enabled .Values.acme.persistence.enabled (not .Values.acme.persistence.existingClaim) }}
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-{{- if .Values.acme.persistence.annotations }}
-  annotations:
-{{ toYaml .Values.acme.persistence.annotations | indent 4 }}
-{{- end }}
-  name: {{ template "traefik.fullname" . }}-acme
-  labels:
-    app: {{ template "traefik.name" . }}
-    chart: {{ template "traefik.chart" . }}
-    release: "{{ .Release.Name }}"
-    heritage: "{{ .Release.Service }}"
-spec:
-  accessModes:
-    - {{ .Values.acme.persistence.accessMode | quote }}
-  resources:
-    requests:
-      storage: {{ .Values.acme.persistence.size | quote }}
-  storageClassName: "{{ .Values.acme.persistence.storageClass }}"
 {{- end }}

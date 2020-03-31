@@ -48,13 +48,6 @@ dynamicConfig:
 acme:
   enabled: false
   challengeType: dns
-  persistence:
-    enabled: true
-    annotations: {}
-    storageClass: ""
-    accessMode: ReadWriteOnce
-    size: 1Gi
-    # existingClaim:
   dnsProvider:
     name: nil
     existingSecretName: ""
@@ -136,11 +129,13 @@ acme:
     vultr:
       VULTR_API_KEY: ""
 #
-logs:
+persistence:
   accessMode: ReadWriteOnce
   size: 2Gi
   storageClass: ""
-  # existingClaim: log-claim
+  # existingClaim: my-claim
+  # volumeName: my-vol
+  volumeMode: Filesystem
 #
 fail2ban:
   enabled: true
@@ -149,8 +144,3 @@ fail2ban:
   traefikLogFilename: traefik.log
   maxRetry: 20
   findTime: 300
-  data:
-    size: 8Gi
-    accessMode: ReadWriteOnce
-    storageClass: ""
-  #   existingClaim: fail2ban-data-pvc
