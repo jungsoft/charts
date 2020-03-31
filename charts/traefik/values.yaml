@@ -131,11 +131,11 @@ acme:
 #
 persistence:
   accessMode: ReadWriteOnce
-  size: 2Gi
-  storageClass: ""
+  size: 8Gi
+  volumeMode: Filesystem
+  # storageClass: ""
   # existingClaim: my-claim
   # volumeName: my-vol
-  volumeMode: Filesystem
 #
 fail2ban:
   enabled: true
