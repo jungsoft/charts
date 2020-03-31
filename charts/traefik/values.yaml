@@ -1,7 +1,7 @@
 ## Default values for Traefik
 image:
   name: traefik
-  tag: 2.1.4
+  tag: 2.1.8
 #
 deployment:
   replicas: 1
@@ -48,13 +48,6 @@ dynamicConfig:
 acme:
   enabled: false
   challengeType: dns
-  persistence:
-    enabled: true
-    annotations: {}
-    storageClass: ""
-    accessMode: ReadWriteOnce
-    size: 1Gi
-    # existingClaim:
   dnsProvider:
     name: nil
     existingSecretName: ""
@@ -136,11 +129,13 @@ acme:
     vultr:
       VULTR_API_KEY: ""
 #
-logs:
+persistence:
   accessMode: ReadWriteOnce
-  size: 2Gi
-  storageClass: ""
-  # existingClaim: log-claim
+  size: 8Gi
+  volumeMode: Filesystem
+  # storageClass: ""
+  # existingClaim: my-claim
+  # volumeName: my-vol
 #
 fail2ban:
   enabled: true
@@ -149,8 +144,3 @@ fail2ban:
   traefikLogFilename: traefik.log
   maxRetry: 20
   findTime: 300
-  data:
-    size: 8Gi
-    accessMode: ReadWriteOnce
-    storageClass: ""
-  #   existingClaim: fail2ban-data-pvc
