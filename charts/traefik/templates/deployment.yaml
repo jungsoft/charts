@@ -73,7 +73,7 @@ spec:
         - name: config
           mountPath: /config
         - name: traefik-vol
-          mountPath: /traefik
+          mountPath: /data
         {{- if or (and .Values.acme.enabled (eq .Values.acme.challengeType "dns") .Values.acme.dnsProvider.name) .Values.env }}
         env:
         {{- range $k, $v := (index .Values.acme.dnsProvider .Values.acme.dnsProvider.name) }}
@@ -100,7 +100,7 @@ spec:
           - name: "F2B_IPTABLES_CHAIN"
             value: "INPUT"
           - name: "F2B_LOG_TARGET"
-            value: "/traefik/fail2ban.log"
+            value: "/data/fail2ban.log"
         securityContext:
           capabilities:
             add:
@@ -134,12 +134,12 @@ spec:
           timeoutSeconds: 5
         volumeMounts:
         - name: traefik-vol
-          mountPath: /traefik
+          mountPath: /data
         - name: fail2ban-filter-vol
-          mountPath: /traefik/filter.d/traefik.conf
+          mountPath: /data/filter.d/traefik.conf
           subPath: traefik.conf
         - name: fail2ban-jail-vol
-          mountPath: /traefik/jail.d/traefik.conf
+          mountPath: /data/jail.d/traefik.conf
           subPath: traefik.conf
       {{- end }}
 
